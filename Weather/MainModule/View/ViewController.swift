@@ -7,12 +7,186 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
-    var presenter: ViewPresenterProtocol!
+class ViewController: UIViewController{
     
+    var presenter: ViewPresenterProtocol!
+    var mainCV: UICollectionView!
+    weak var hourlyForecastCV: UICollectionView?
+    weak var currentInfoCV: UICollectionView?
+    weak var weekForecastTV: UITableView?
+    weak var fiveDayForecastTV: UITableView?
+    var pageControl: UIPageControl = UIPageControl(frame: .zero)
+    var imageArray = (0...9).compactMap{ UIImage(named: "info\($0)") }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        setLayout()
+        mainCV.delegate = self
+        mainCV.dataSource = self
+        mainCV.backgroundColor = .clear
+    }
+    
+    var backgroundPictureImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(named: "background")
+        return imageView
+    }()
+    
+    var weatherView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentMode = .scaleAspectFit
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        view.layer.cornerRadius = 15
+        view.addBlurEffect()
+        return view
+    }()
+    
+    var weatherIcon: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = UIImage(named: "01d")
+        return imageView
+    }()
+
+    var locationLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        label.textColor = .white
+        label.text = "Minsk"
+        return label
+    }()
+
+    var temperatureLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        label.font = label.font.withSize(100)
+        label.textColor = .white
+        label.text = "17"
+        return label
+    }()
+
+    var maxMinLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = .white
+        label.text = "17/10"
+        return label
+    }()
+
+    var temperatureInfoLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        label.textColor = .white
+        label.text = "Sunny"
+        return label
+    }()
+    
+    var shareButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.cornerRadius = 20
+        button.setImage(UIImage(named: "share"), for: .normal)
+        return button
+    }()
+    
+    private var refreshButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.cornerRadius = 20
+        button.setImage(UIImage(named: "refresh"), for: .normal)
+        return button
+    }()
+        
+    
+    
+    func setLayout() {
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: view.frame.size.width, height: view.frame.size.height*0.75)
+        layout.minimumLineSpacing = 0
+        layout.sectionInset = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
+        layout.scrollDirection = .horizontal
+
+        mainCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        mainCV.translatesAutoresizingMaskIntoConstraints = false
+        mainCV.register(MainFirstCollectionViewCell.self, forCellWithReuseIdentifier: MainFirstCollectionViewCell.identifier)
+        mainCV.register(MainSecondCollectionViewCell.self, forCellWithReuseIdentifier: MainSecondCollectionViewCell.identifier)
+        mainCV.register(MainThirdCollectionViewCell.self, forCellWithReuseIdentifier: MainThirdCollectionViewCell.identifier)
+        mainCV.backgroundColor = .red
+        mainCV.isPagingEnabled = true
+        mainCV.showsHorizontalScrollIndicator = false
+        mainCV.isUserInteractionEnabled = true
+        mainCV.allowsSelection = false
+        
+        let buttonStack = UIStackView(arrangedSubviews: [shareButton, refreshButton])
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        buttonStack.axis = .horizontal
+        buttonStack.spacing = 15
+        
+        let firstStack = UIStackView(arrangedSubviews: [locationLabel, temperatureLabel, temperatureInfoLabel])
+        firstStack.translatesAutoresizingMaskIntoConstraints = false
+        firstStack.axis = .vertical
+
+        let secondStack = UIStackView(arrangedSubviews: [buttonStack, weatherIcon, maxMinLabel])
+        secondStack.translatesAutoresizingMaskIntoConstraints = false
+        secondStack.axis = .vertical
+
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        pageControl.currentPageIndicatorTintColor = .white
+        pageControl.pageIndicatorTintColor = UIColor.lightGray.withAlphaComponent(0.8)
+        pageControl.isUserInteractionEnabled = false
+        
+        view.addSubview(backgroundPictureImageView)
+        view.addSubview(mainCV)
+        view.addSubview(weatherView)
+        weatherView.addSubview(firstStack)
+        weatherView.addSubview(secondStack)
+        view.insertSubview(pageControl, at: 0)
+        view.addSubview(pageControl)
+        
+        
+        NSLayoutConstraint.activate([
+            mainCV.topAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: 15),
+            mainCV.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.75),
+            mainCV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainCV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            backgroundPictureImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundPictureImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            backgroundPictureImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundPictureImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            weatherView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            weatherView.heightAnchor.constraint(equalToConstant: 200),
+            weatherView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15),
+            weatherView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -15),
+            
+            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15),
+           
+            firstStack.widthAnchor.constraint(equalToConstant: 215),
+            firstStack.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 15),
+            firstStack.leadingAnchor.constraint(equalTo: weatherView.leadingAnchor, constant: 15),
+            firstStack.bottomAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: -15),
+            
+            secondStack.widthAnchor.constraint(equalToConstant: 100),
+            secondStack.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 15),
+            secondStack.trailingAnchor.constraint(equalTo: weatherView.trailingAnchor, constant: -15),
+            secondStack.bottomAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: -15),
+            
+            shareButton.widthAnchor.constraint(equalToConstant: 25),
+            shareButton.leadingAnchor.constraint(equalTo: buttonStack.leadingAnchor, constant: 35),
+            buttonStack.heightAnchor.constraint(equalToConstant: 30)
+            
+        ])
     }
     
 }
