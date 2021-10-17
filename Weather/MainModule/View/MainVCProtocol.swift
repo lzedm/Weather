@@ -8,9 +8,12 @@
 import Foundation
 import UIKit
 
-extension ViewController: ViewProtocol {
+extension ViewController: ViewProtocol {    
     
     func success() {
+        mainCV.reloadData()
+        hourlyForecastCV?.reloadData()
+        currentInfoCV?.reloadData()
     }
     
     func failure(error: Error) {
@@ -21,5 +24,20 @@ extension ViewController: ViewProtocol {
         locationLabel.text = city
     }
     
+    func setTemperatureLabel(temperature: String) {
+        temperatureLabel.text = temperature
+    }
+    
+    func setTemperatureInfoLabel(temperatureInfo: String) {
+        temperatureInfoLabel.text = temperatureInfo
+    }
+    
+    func setWeatherIcon(icon: String) {
+        weatherIcon.image = UIImage(named: "01d")
+    }
+    
+    func setMaxMinTempLabel(dayNight: String) {
+        maxMinLabel.text = dayNight
+    }
         
 }

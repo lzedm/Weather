@@ -30,32 +30,42 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource{
         case mainCV:
             switch indexPath.item {
                 case 0:
-                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainFirstCollectionViewCell.identifier, for: indexPath) as! MainFirstCollectionViewCell
-                    cell.setHourlyCollectionViewDataSourceDelegate(dataSourceDelegate: self)
-                    cell.setInfoCollectionViewDataSourceDelegate(dataSourceDelegate: self)
-                hourlyForecastCV = cell.hourlyCollectionView
-                currentInfoCV = cell.infoCollectionView
-              return cell
+                 let mainFirstCVCell = collectionView.dequeueReusableCell(withReuseIdentifier: MainFirstCollectionViewCell.identifier, for: indexPath) as! MainFirstCollectionViewCell
+                mainFirstCVCell.setHourlyCollectionViewDataSourceDelegate(dataSourceDelegate: self)
+                mainFirstCVCell.setInfoCollectionViewDataSourceDelegate(dataSourceDelegate: self)
+                hourlyForecastCV = mainFirstCVCell.hourlyCollectionView
+                currentInfoCV = mainFirstCVCell.infoCollectionView
+              return mainFirstCVCell
             case 1:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainSecondCollectionViewCell.identifier, for: indexPath) as! MainSecondCollectionViewCell
-                cell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
-                weekForecastTV = cell.tableView
-              return cell
+                let mainSecondCVCell = collectionView.dequeueReusableCell(withReuseIdentifier: MainSecondCollectionViewCell.identifier, for: indexPath) as! MainSecondCollectionViewCell
+                mainSecondCVCell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
+                weekForecastTV = mainSecondCVCell.tableView
+              return mainSecondCVCell
             case 2:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainThirdCollectionViewCell.identifier, for: indexPath) as! MainThirdCollectionViewCell
-                cell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
-                fiveDayForecastTV = cell.tableView
-              return cell
+                let mainThirdCVCell = collectionView.dequeueReusableCell(withReuseIdentifier: MainThirdCollectionViewCell.identifier, for: indexPath) as! MainThirdCollectionViewCell
+                mainThirdCVCell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
+                fiveDayForecastTV = mainThirdCVCell.tableView
+              return mainThirdCVCell
             default:
                 fatalError("Unexpected row \(indexPath.row) in section \(indexPath.section)")
             }
         case hourlyForecastCV:
-              let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyForecastCollectionViewCell.identifier, for: indexPath) as! HourlyForecastCollectionViewCell
-            return cell
+            let hourlyForecastCVCell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyForecastCollectionViewCell.identifier, for: indexPath) as! HourlyForecastCollectionViewCell
+            if presenter.hourlyArray.isEmpty == false{
+                hourlyForecastCVCell.temperatureLabel.text = presenter.hourlyArray[indexPath.row].temperatureString
+            if indexPath.row == 0{
+                hourlyForecastCVCell.hourLabel.text = "Сейчас"
+            }else{
+                hourlyForecastCVCell.hourLabel.text = presenter.hourlyArray[indexPath.row].timeString
+            }
+                hourlyForecastCVCell.weatherIcon.image = UIImage(named: presenter.hourlyArray[indexPath.row].icon)
+            }
+            return hourlyForecastCVCell
         case currentInfoCV:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CurrentInfoCollectionViewCell.identifier, for: indexPath) as! CurrentInfoCollectionViewCell
-            cell.imageView.image = imageArray[indexPath.row]
-            return cell
+            let currentInfoCVCell = collectionView.dequeueReusableCell(withReuseIdentifier: CurrentInfoCollectionViewCell.identifier, for: indexPath) as! CurrentInfoCollectionViewCell
+            currentInfoCVCell.imageView.image = imageArray[indexPath.row]
+            currentInfoCVCell.infoLabel.text = presenter.currentWeatherModel?.collectionInfoArray[indexPath.row]
+            return currentInfoCVCell
         default:
             return UICollectionViewCell()
         }
