@@ -9,15 +9,7 @@ import Foundation
 import UIKit
 
 extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource{
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        pageControl.currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
-    }
-
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        pageControl.currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
-    }
-    
+ 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView {
         case mainCV:
@@ -65,7 +57,40 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource{
             cell.imageView.image = imageArray[indexPath.row]
             return cell
         default:
-            return fatalError("Unexpected row \(indexPath.row) in section \(indexPath.section)") as! UICollectionViewCell
+            return UICollectionViewCell()
         }
     }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        switch scrollView{
+        case mainCV:
+            hourlyForecastCV?.isScrollEnabled = true
+            pageControl.currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
+        case hourlyForecastCV:
+            mainCV?.isScrollEnabled = true
+        default:
+            break
+        }
+    }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        switch scrollView{
+        case mainCV:
+            pageControl.currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
+        default:
+            break
+        }
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        switch scrollView{
+        case mainCV:
+            hourlyForecastCV?.isScrollEnabled = false
+        case hourlyForecastCV:
+            mainCV?.isScrollEnabled = false
+        default:
+            break
+        }
+    }
+    
 }

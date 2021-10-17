@@ -20,6 +20,15 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var hourLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = .white
+        label.text = "17"
+        return label
+    }()
+    
     var weatherIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -37,15 +46,6 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
         return label
     }()
    
-    var hourLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.textColor = .white
-        label.text = "17"
-        return label
-    }()
-    
     private func setLayout() {
         let stack = UIStackView(arrangedSubviews: [hourLabel, weatherIcon, temperatureLabel])
         stack.translatesAutoresizingMaskIntoConstraints = false

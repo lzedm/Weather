@@ -23,7 +23,6 @@ class ViewController: UIViewController{
         setLayout()
         mainCV.delegate = self
         mainCV.dataSource = self
-        mainCV.backgroundColor = .clear
     }
     
     var backgroundPictureImageView: UIImageView = {
@@ -104,27 +103,24 @@ class ViewController: UIViewController{
         button.setImage(UIImage(named: "refresh"), for: .normal)
         return button
     }()
-        
-    
     
     func setLayout() {
-        
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.size.width, height: view.frame.size.height*0.75)
-        layout.minimumLineSpacing = 0
-        layout.sectionInset = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
+        layout.itemSize = CGSize(width: view.frame.size.width, height: view.frame.size.height*0.675)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
 
         mainCV = UICollectionView(frame: .zero, collectionViewLayout: layout)
         mainCV.translatesAutoresizingMaskIntoConstraints = false
+        mainCV.showsHorizontalScrollIndicator = false
+        mainCV.isUserInteractionEnabled = true
+        mainCV.isPagingEnabled = true
+        mainCV.allowsSelection = false
+        mainCV.backgroundColor = .clear
         mainCV.register(MainFirstCollectionViewCell.self, forCellWithReuseIdentifier: MainFirstCollectionViewCell.identifier)
         mainCV.register(MainSecondCollectionViewCell.self, forCellWithReuseIdentifier: MainSecondCollectionViewCell.identifier)
         mainCV.register(MainThirdCollectionViewCell.self, forCellWithReuseIdentifier: MainThirdCollectionViewCell.identifier)
-        mainCV.backgroundColor = .red
-        mainCV.isPagingEnabled = true
-        mainCV.showsHorizontalScrollIndicator = false
-        mainCV.isUserInteractionEnabled = true
-        mainCV.allowsSelection = false
         
         let buttonStack = UIStackView(arrangedSubviews: [shareButton, refreshButton])
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
@@ -152,13 +148,7 @@ class ViewController: UIViewController{
         view.insertSubview(pageControl, at: 0)
         view.addSubview(pageControl)
         
-        
         NSLayoutConstraint.activate([
-            mainCV.topAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: 15),
-            mainCV.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.75),
-            mainCV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            mainCV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
             backgroundPictureImageView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundPictureImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             backgroundPictureImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -169,9 +159,11 @@ class ViewController: UIViewController{
             weatherView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15),
             weatherView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -15),
             
-            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15),
-           
+            mainCV.topAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: 15),
+            mainCV.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 0.75),
+            mainCV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainCV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+          
             firstStack.widthAnchor.constraint(equalToConstant: 215),
             firstStack.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 15),
             firstStack.leadingAnchor.constraint(equalTo: weatherView.leadingAnchor, constant: 15),
@@ -182,6 +174,9 @@ class ViewController: UIViewController{
             secondStack.trailingAnchor.constraint(equalTo: weatherView.trailingAnchor, constant: -15),
             secondStack.bottomAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: -15),
             
+            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15),
+           
             shareButton.widthAnchor.constraint(equalToConstant: 25),
             shareButton.leadingAnchor.constraint(equalTo: buttonStack.leadingAnchor, constant: 35),
             buttonStack.heightAnchor.constraint(equalToConstant: 30)
@@ -189,8 +184,4 @@ class ViewController: UIViewController{
         ])
     }
     
-}
-
-extension ViewController: ViewProtocol {
-        
 }

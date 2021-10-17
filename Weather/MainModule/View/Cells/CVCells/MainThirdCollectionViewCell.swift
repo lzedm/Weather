@@ -57,8 +57,7 @@ class MainThirdCollectionViewCell: UICollectionViewCell {
             tableView.topAnchor.constraint(equalTo: topAnchor),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
-            tableView.heightAnchor.constraint(equalToConstant: 499)
-           
+            tableView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.91)
         ])
     }
     
