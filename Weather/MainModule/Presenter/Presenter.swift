@@ -9,12 +9,13 @@ import Foundation
 
 protocol ViewProtocol: AnyObject{
     func success()
-    func failure(error: Error)
+    func failure(error: ErrorMessage)
     func setLocationLabel(city: String)
     func setTemperatureInfoLabel(temperatureInfo: String)
     func setTemperatureLabel(temperature: String)
     func setWeatherIcon(icon: String)
     func setMaxMinTempLabel(dayNight: String)
+    func getMessage(letter: String)
 }
 
 protocol ViewPresenterProtocol: AnyObject{
@@ -28,11 +29,13 @@ protocol ViewPresenterProtocol: AnyObject{
     var hourlyArray: [HourlyWeatherModel] {get set}
     var dailyArray: [DailyWeatherModel] {get set}
     var forecastArray: [FiveDayForecastModel] {get set}
+    func startUpdatingLocation()
     func didUpdateLocation()
 }
 
 class Presenter: ViewPresenterProtocol, LocationServiceDelegate{
-    let view: ViewProtocol
+    
+    let view: ViewProtocol?
     let networkService: NetworkServiceProtocol!
     let locationService: LocationServiceProtocol!
     
@@ -54,9 +57,27 @@ class Presenter: ViewPresenterProtocol, LocationServiceDelegate{
         locationService.startUpdatingLocation()
     }
     
+    func startUpdatingLocation(){
+        locationService.startUpdatingLocation()
+    }
+    
     func didUpdateLocation(){
         self.showWeatherData()
         self.showFiveDayForecast()
+    }
+    
+    func didFailUpdateLocation(error: Error) {
+        print(error.localizedDescription)
+        view?.failure(error: ErrorMessage.location)
+    }
+    
+    func setUpView(){
+        view?.setLocationLabel(city: "📍\(locationService.getCurrentLocation()!.city)")
+        view?.setTemperatureLabel(temperature: currentWeatherModel!.temperatureString)
+        view?.setTemperatureInfoLabel(temperatureInfo: currentWeatherModel!.temperatureInfoString)
+        view?.setWeatherIcon(icon: hourlyArray[0].icon)
+        view?.setMaxMinTempLabel(dayNight: ("\(dailyArray[0].maxString) / \(dailyArray[0].minSring)"))
+        view?.getMessage(letter:"Weather in  \(locationService.getCurrentLocation()!.city) today: \n\(currentWeatherModel!.temperatureString), \(currentWeatherModel!.temperatureInfoString).\nFeels like: \(currentWeatherModel!.feelsLikeString) \nMax: \(dailyArray[0].maxString) \nMin: \(dailyArray[0].minSring) \nPressure: \(currentWeatherModel!.pressureString)  \nHumidity \(currentWeatherModel!.humidityString)")
     }
     
     func showWeatherData(){
@@ -74,9 +95,10 @@ class Presenter: ViewPresenterProtocol, LocationServiceDelegate{
                             self.dailyArray.append(DailyWeatherModel(dailyWeatherData: index))
                         }
                         self.setUpView()
-                        self.view.success()
+                        self.view?.success()
                     case .failure(let error):
-                        self.view.failure(error: error)
+                        print(error.localizedDescription)
+                        self.view?.failure(error: ErrorMessage.network)
                 }
             }
         }
@@ -93,20 +115,12 @@ class Presenter: ViewPresenterProtocol, LocationServiceDelegate{
                         for index in forecastData.list{
                             self.forecastArray.append(FiveDayForecastModel(forecastData: index))
                         }
-                        self.view.success()
+                        self.view?.success()
                     case .failure(let error):
-                        self.view.failure(error: error)
+                        print(error.localizedDescription)
+                        self.view?.failure(error: ErrorMessage.network)
                 }
             }
         }
     }
-    
-    func setUpView(){
-        view.setLocationLabel(city: "📍\(locationService.getCurrentLocation()!.city)")
-        view.setTemperatureLabel(temperature: currentWeatherModel!.temperatureString)
-        view.setTemperatureInfoLabel(temperatureInfo: currentWeatherModel!.temperatureInfoString)
-        view.setWeatherIcon(icon: hourlyArray[0].icon)
-        view.setMaxMinTempLabel(dayNight: ("\(dailyArray[0].maxString) / \(dailyArray[0].minSring)"))
-    }
-
 }

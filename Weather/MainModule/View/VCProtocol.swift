@@ -1,5 +1,5 @@
 //
-//  MainVCProtocol.swift
+//  VCProtocol.swift
 //  Weather
 //
 //  Created by Dima Milosh on 16.10.21.
@@ -8,16 +8,20 @@
 import Foundation
 import UIKit
 
-extension ViewController: ViewProtocol {    
+extension ViewController: ViewProtocol {
     
     func success() {
         mainCV.reloadData()
         hourlyForecastCV?.reloadData()
         currentInfoCV?.reloadData()
+        stopLoading()
+
     }
     
-    func failure(error: Error) {
-        print(error.localizedDescription)
+    func failure(error: ErrorMessage) {
+        showErrorAlert(title: error.title, message: error.body) { action in
+            self.presenter.startUpdatingLocation()
+        }
     }
     
     func setLocationLabel(city: String) {
@@ -39,5 +43,8 @@ extension ViewController: ViewProtocol {
     func setMaxMinTempLabel(dayNight: String) {
         maxMinLabel.text = dayNight
     }
-        
+    
+    func getMessage(letter: String) {
+        message = letter
+    }
 }

@@ -53,8 +53,8 @@ class MainFirstCollectionViewCell: UICollectionViewCell {
     
     private func setLayout() {
         let layoutHourly: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layoutHourly.itemSize = CGSize(width: 55, height: 100)
-        layoutHourly.sectionInset = UIEdgeInsets(top: 0, left: 13, bottom: 0, right: 0)
+        layoutHourly.itemSize = CGSize(width: 57, height: 100)
+        layoutHourly.sectionInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
         layoutHourly.minimumLineSpacing = 0
         layoutHourly.scrollDirection = .horizontal
         

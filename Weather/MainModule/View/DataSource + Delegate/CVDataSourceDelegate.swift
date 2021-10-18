@@ -54,7 +54,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource{
             if presenter.hourlyArray.isEmpty == false{
                 hourlyForecastCVCell.temperatureLabel.text = presenter.hourlyArray[indexPath.row].temperatureString
             if indexPath.row == 0{
-                hourlyForecastCVCell.hourLabel.text = "Сейчас"
+                hourlyForecastCVCell.hourLabel.text = "Now"
             }else{
                 hourlyForecastCVCell.hourLabel.text = presenter.hourlyArray[indexPath.row].timeString
             }

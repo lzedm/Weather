@@ -17,12 +17,22 @@ class ViewController: UIViewController{
     weak var fiveDayForecastTV: UITableView?
     var pageControl: UIPageControl = UIPageControl(frame: .zero)
     var imageArray = (0...9).compactMap{ UIImage(named: "info\($0)") }
+    var message = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
         mainCV.delegate = self
         mainCV.dataSource = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if Reachability.isConnectedToNetwork() == true {
+            startLaunching()
+            presenter.startUpdatingLocation()
+        }else{
+            startOfflineLaunching()
+        }
     }
     
     var backgroundPictureImageView: UIImageView = {
@@ -88,19 +98,12 @@ class ViewController: UIViewController{
         return label
     }()
     
-    var shareButton: UIButton = {
+    var menuButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 20
-        button.setImage(UIImage(named: "share"), for: .normal)
-        return button
-    }()
-    
-    private var refreshButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.cornerRadius = 20
-        button.setImage(UIImage(named: "refresh"), for: .normal)
+        button.setImage(UIImage(named: "horizontallines"), for: .normal)
+        button.addTarget(self, action: #selector(menuPressed), for: .touchUpInside)
         return button
     }()
     
@@ -122,19 +125,14 @@ class ViewController: UIViewController{
         mainCV.register(MainSecondCollectionViewCell.self, forCellWithReuseIdentifier: MainSecondCollectionViewCell.identifier)
         mainCV.register(MainThirdCollectionViewCell.self, forCellWithReuseIdentifier: MainThirdCollectionViewCell.identifier)
         
-        let buttonStack = UIStackView(arrangedSubviews: [shareButton, refreshButton])
-        buttonStack.translatesAutoresizingMaskIntoConstraints = false
-        buttonStack.axis = .horizontal
-        buttonStack.spacing = 15
-        
         let firstStack = UIStackView(arrangedSubviews: [locationLabel, temperatureLabel, temperatureInfoLabel])
         firstStack.translatesAutoresizingMaskIntoConstraints = false
         firstStack.axis = .vertical
 
-        let secondStack = UIStackView(arrangedSubviews: [buttonStack, weatherIcon, maxMinLabel])
+        let secondStack = UIStackView(arrangedSubviews: [weatherIcon, maxMinLabel])
         secondStack.translatesAutoresizingMaskIntoConstraints = false
         secondStack.axis = .vertical
-
+        
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         pageControl.currentPageIndicatorTintColor = .white
         pageControl.pageIndicatorTintColor = UIColor.lightGray.withAlphaComponent(0.8)
@@ -143,6 +141,7 @@ class ViewController: UIViewController{
         view.addSubview(backgroundPictureImageView)
         view.addSubview(mainCV)
         view.addSubview(weatherView)
+        weatherView.addSubview(menuButton)
         weatherView.addSubview(firstStack)
         weatherView.addSubview(secondStack)
         view.insertSubview(pageControl, at: 0)
@@ -164,22 +163,23 @@ class ViewController: UIViewController{
             mainCV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mainCV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
           
+            menuButton.heightAnchor.constraint(equalToConstant: 25),
+            menuButton.widthAnchor.constraint(equalToConstant: 25),
+            menuButton.trailingAnchor.constraint(equalTo: weatherView.trailingAnchor, constant: -15),
+            menuButton.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 15),
+            
             firstStack.widthAnchor.constraint(equalToConstant: 215),
             firstStack.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 15),
             firstStack.leadingAnchor.constraint(equalTo: weatherView.leadingAnchor, constant: 15),
             firstStack.bottomAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: -15),
             
             secondStack.widthAnchor.constraint(equalToConstant: 100),
-            secondStack.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 15),
+            secondStack.topAnchor.constraint(equalTo: menuButton.bottomAnchor),
             secondStack.trailingAnchor.constraint(equalTo: weatherView.trailingAnchor, constant: -15),
             secondStack.bottomAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: -15),
             
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15),
-           
-            shareButton.widthAnchor.constraint(equalToConstant: 25),
-            shareButton.leadingAnchor.constraint(equalTo: buttonStack.leadingAnchor, constant: 35),
-            buttonStack.heightAnchor.constraint(equalToConstant: 30)
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15)
             
         ])
     }

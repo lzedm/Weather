@@ -30,7 +30,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
             case weekForecastTV:
                 let weekForecastTVCell = tableView.dequeueReusableCell(withIdentifier: WeekForecastTableViewCell.identifier, for: indexPath) as! WeekForecastTableViewCell
                 if indexPath.row == 0{
-                    weekForecastTVCell.dayLabel.text = "Сегодня"
+                    weekForecastTVCell.dayLabel.text = "Today"
                 }else{
                     weekForecastTVCell.dayLabel.text = presenter.dailyArray[indexPath.row].dtString
                 }

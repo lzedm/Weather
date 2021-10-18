@@ -67,7 +67,7 @@ struct CurrentWeatherModel {
     
     var pressureString: String {
         let pressure = String(pressure)
-        return "\(pressure) гПа"
+        return "\(pressure) hPa"
     }
     
     var humidityString: String {
@@ -83,13 +83,13 @@ struct CurrentWeatherModel {
     var visibilityString: String {
         let km = visibility/1000
         let visibility = String(format: "%.0f", km)
-        return "\(visibility) км"
+        return "\(visibility) km"
     }
     
     var windSpeedString: String {
         let mlTokm = windSpeed*3.529
         let speed = String(format: "%.0f", mlTokm)
-        return "\(speed) км/ч"
+        return "\(speed) km/h"
     }
     
     var windDegString: String {

@@ -30,7 +30,6 @@ struct DailyWeatherModel{
         let convertedTime = Date(timeIntervalSince1970: TimeInterval(self.dt))
         let df = DateFormatter()
         df.dateFormat = "EEEE"
-        df.locale = Locale(identifier: "Ru_RU")
         let time = df.string(from: convertedTime).capitalized
         return "\(time)"
     }

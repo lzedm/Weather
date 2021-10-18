@@ -16,19 +16,18 @@ protocol LocationServiceProtocol: AnyObject{
 
 protocol LocationServiceDelegate: AnyObject{
     func didUpdateLocation()
+    func didFailUpdateLocation(error: Error)
 }
 
 class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProtocol {
-    var locationManager = CLLocationManager()
     
+    var locationManager = CLLocationManager()
     var currentLocation: Location?
     weak var delegate: LocationServiceDelegate?
-
     
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.startUpdatingLocation()
         locationManager.requestWhenInUseAuthorization()
     }
 
@@ -49,6 +48,10 @@ class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProto
             self.delegate?.didUpdateLocation()
                 }
             }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        delegate?.didFailUpdateLocation(error: error)
     }
     
     func startUpdatingLocation() {
