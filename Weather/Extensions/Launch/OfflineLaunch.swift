@@ -43,8 +43,8 @@ extension ViewController {
         button.isUserInteractionEnabled = true
         button.layer.cornerRadius = 20
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.darkGray.cgColor
-        button.setTitleColor(.darkGray, for: .normal)
+        button.layer.borderColor = UIColor.systemBlue.cgColor
+        button.setTitleColor(.systemBlue, for: .normal)
         button.setTitle("Retry", for: .normal)
         button.addTarget(self, action: #selector(retryPressed), for: .touchUpInside)
         launchingView?.addSubview(button)
